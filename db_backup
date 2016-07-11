@@ -1,0 +1,5 @@
+#!/bin/sh
+date=`date +%Y-%m-%d:%H:%M:%S`
+path="/home/your-username/.db_backup"
+mysqldump --opt -Q -u mysql_user -pmysql_pass mysql_db | bzip2 -c --fast > $path/SQL-$date.sql.bz2
+find $path -mtime +25 -type f -exec rm -rf {} \;

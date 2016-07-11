@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# lokacija na kojoj se nalaze backupi baze
+db_backup_path="/home/your-username/.db_backup"
+
+# zadnji backup baze
+last_modified_file="$(ls -rt $db_backup_path | tail --lines=1)"
+
+# dekompresija zadnjeg backupa u .sql file
+bzip2 -dk "$db_backup_path/$last_modified_file"
+
+clean_filename=$(echo "$last_modified_file" | cut -d'.' -f 1)
+extension=".sql"
+sql_file_name=$clean_filename$extension # ime sql filea kojeg ćemo importati u dev bazu
+
+# import sql-a iz produkcijske baze u razvojnu
+mysql -u mysql_user -pmysql_pass mysql_db < "$db_backup_path/$sql_file_name"
+
+# uklanjanje dekompresiranog filea
+rm "$db_backup_path/$sql_file_name"
